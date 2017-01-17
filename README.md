@@ -37,4 +37,9 @@ for importing root project to eclipse
      <linkedResources> </linkedResources>
    </projectDescription>
 
-## added 
+## Packing:
+
+https://github.com/sbt/sbt-native-packager
+
+  # docker image
+  sbt docker:publishLocal

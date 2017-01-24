@@ -33,8 +33,84 @@ insert line to .\project\plugins.sbt
 
 for importing root project to eclipse
    <projectDescription>
-     <name>challenger.one</name>
-     <linkedResources> </linkedResources>
+     <name>challengerone</name>
+     <linkedResources></linkedResources>
    </projectDescription>
 
-## added 
+## Cassandra Database:
+
+### Ports:
+'''
+7199 - JMX (was 8080 pre Cassandra 0.8.xx)
+1024 - 65355 Random port required by JMX. Starting with Java 7u4 a specific port can be specified using the com.sun.management.jmxremote.rmi.port property.
+7000 - Internode communication (not used if TLS enabled)
+7001 - TLS Internode communication (used if TLS enabled)
+9042 - CQL native transport port  (lagom: 4000)
+9160 - Thrift client API  (lagom default: OFF)
+'''
+
+### Tools for access:
+
+#### JDBC / SQUIRREL
+
+https://github.com/adejanovski/cassandra-jdbc-wrapper
+
+JDBC driver class :   com.github.adejanovski.cassandra.jdbc.CassandraDriver
+JDBC URL :            jdbc:cassandra://localhost--localhost:4000/system
+
+oder:
+
+https://github.com/datastax/java-driver
+
+#### native cql
+
+install:
+
+download / extract:
+https://cassandra.apache.org/download/
+
+##### cqlsh
+
+cqlsh.bat 127.0.0.1 4000
+
+if error:
+
+Connection error: ('Unable to connect to any servers', {'127.0.0.1': ProtocolError("cql_version '3.4.2' is not supported by remote (w/ native protocol). Supported versions: [u'3.4.0']",)})
+
+cqlsh.bat 127.0.0.1 4000 --cqlversion 3.4.0
+
+##### nodetool:
+
+nodetool.bat -h 127.0.0.1 -p 4099 status
+
+nodetool.bat -h 127.0.0.1 -p 4099 snapshot 
+
+https://wiki.apache.org/cassandra/NodeTool
+
+```
+  flush \[keyspace\] \[cfnames\] - Flush one or more column family
+  repair \[keyspace\] \[cfnames\] - Repair one or more column family
+  cleanup \[keyspace\] \[cfnames\] - Run cleanup on one or more column family
+  compact \[keyspace\] \[cfnames\] - Force a (major) compaction on one or more column family
+```
+
+
+#### Connect über "thrift" rpc server
+
+#### Zugriff über helenos
+
+https://github.com/tomekkup/helenos
+
+'''
+//lagomCassandraJvmOptions in ThisBuild := 
+//  Seq("-Xms256m", "-Xmx1024m", "-Dcassandra.jmx.local.port=4099",
+//    "-DCassandraLauncher.configResource=thrx-dev-embedded-cassandra.yaml") // these are actually the default jvm options
+'''
+hat nicht funktioniert -- thrx-dev-embedded-cassandra.yaml wurde nicht gefunden/geladen
+
+
+
+
+
+
+ 

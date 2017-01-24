@@ -7,6 +7,8 @@ scalaVersion in ThisBuild := "2.11.8"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
+updateOptions := updateOptions.value.withCachedResolution(true)
+
 // external services just 4 development
 // http://www.lagomframework.com/documentation/1.2.x/java/MultipleBuilds.html
 // first use publishLocal on "online-auction-scala" project 

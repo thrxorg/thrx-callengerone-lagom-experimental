@@ -37,6 +37,18 @@ for importing root project to eclipse
      <linkedResources></linkedResources>
    </projectDescription>
 
+### debuging with sbt or activator:
+
+  On the command-line - use 'sbt -jvm-debug'
+	
+  There's a very convenient -jvm-debug flag in the official SBT packages based on Bash (ie the Unix ones... and very recently, it's been added to 	the Windows SBT launcher too). You can use the flag like this to specify the debug port:
+
+	sbt -jvm-debug 9999 runAll
+	activator -jvm-debug 9999 run
+
+// in build.sbt needed for debugging tests fork in Test := false
+
+
 ## Cassandra Database:
 
 ### Ports:

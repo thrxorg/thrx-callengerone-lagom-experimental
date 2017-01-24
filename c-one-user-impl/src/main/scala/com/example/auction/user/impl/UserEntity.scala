@@ -6,6 +6,7 @@ import com.lightbend.lagom.scaladsl.playjson.{Jsonable, SerializerRegistry, Seri
 import play.api.libs.json.{Format, Json}
 import com.example.auction.utils.JsonFormats._
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
+import java.util.UUID
 
 class UserEntity extends PersistentEntity {
   override type Command = UserCommand
@@ -24,15 +25,25 @@ class UserEntity extends PersistentEntity {
       Actions().onReadOnlyCommand[GetUser.type, Option[User]] {
         case (GetUser, ctx, state) => ctx.reply(state)
       }.onCommand[CreateUser, Done] {
-        case (CreateUser(name), ctx, state) =>
-          ctx.thenPersist(UserCreated(name), _ => ctx.reply(Done))
+        case (CreateUser(user), ctx, state) =>
+          ctx.thenPersist(UserCreated(user), _ => ctx.reply(Done))
       }.onEvent {
-        case (UserCreated(name), state) => Some(User(name))
+        case (UserCreated(user), state) => Some(user)
       }
   }
 }
 
-case class User(name: String) extends Jsonable
+case class User(
+    id: UUID,
+    nickName: String,
+    givenName: String, 
+    familyname: String,
+    postCode: String, // PLZ 
+    eMail: String,
+    mobilPhone: Option[String], 
+    street: Option[String], 
+    city: Option[String] 
+    )
 
 object User {
   implicit val format: Format[User] = Json.format
@@ -40,7 +51,7 @@ object User {
 
 sealed trait UserEvent extends Jsonable
 
-case class UserCreated(name: String) extends UserEvent
+case class UserCreated(user: User) extends UserEvent
 
 object UserCreated {
   implicit val format: Format[UserCreated] = Json.format
@@ -48,7 +59,7 @@ object UserCreated {
 
 sealed trait UserCommand extends Jsonable
 
-case class CreateUser(name: String) extends UserCommand with ReplyType[Done]
+case class CreateUser(user: User) extends UserCommand with ReplyType[Done]
 
 object CreateUser {
   implicit val format: Format[CreateUser] = Json.format

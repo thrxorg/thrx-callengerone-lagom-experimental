@@ -12,8 +12,10 @@ import com.example.auction.user.api.UserService
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.transport.NotFound
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
+import com.example.auction.security.ServerSecurity._
 
 import scala.concurrent.ExecutionContext
+import com.lightbend.lagom.scaladsl.server.ServerServiceCall
 
 class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem)(implicit ec: ExecutionContext, mat: Materializer) extends UserService {
 
@@ -21,20 +23,22 @@ class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem)(i
 
   override def createUser = ServiceCall { createUser =>
     val userId = UUID.randomUUID()
-    refFor(userId).ask(CreateUser(createUser.name)).map { _ =>
-      api.User(userId, createUser.name)
-    }
+    val pUser = User(userId, createUser.nickName, createUser.givenName, createUser.familyname, createUser.postCode, createUser.eMail, createUser.mobilPhone, createUser.street, createUser.city)
+    entityRef(userId).ask(CreateUser(pUser)).map { _ => convertUser(pUser) }
   }
 
+  private def convertUser(user: User): api.User = {
+    api.User(Some(user.id), user.nickName, user.givenName, user.familyname, user.postCode, user.eMail, user.mobilPhone, user.street, user.city)
+  }
+  
   override def getUser(userId: UUID) = ServiceCall { _ =>
-    refFor(userId).ask(GetUser).map {
-      case Some(user) =>
-        api.User(userId, user.name)
-      case None =>
-        throw NotFound(s"User with id $userId")
+    entityRef(userId).ask(GetUser).map {
+      case Some(user) => convertUser(user)
+      case None => throw NotFound(s"User with id $userId")
     }
   }
 
+  // FIXME THR 
   override def getUsers = ServiceCall { _ =>
     // Note this should never make production....
     currentIdsQuery.currentPersistenceIds()
@@ -43,12 +47,16 @@ class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem)(i
         val entityId = id.split("\\|", 2).last
         registry.refFor[UserEntity](entityId)
           .ask(GetUser)
-          .map(_.map(user => api.User(UUID.fromString(entityId), user.name)))
+          .map(_.map(user => convertUser(user))) // FIXME THR kaput gemacht ???
       }.collect {
         case Some(user) => user
       }
       .runWith(Sink.seq)
   }
 
-  private def refFor(userId: UUID) = registry.refFor[UserEntity](userId.toString)
+  private def entityRef(userId: UUID) = registry.refFor[UserEntity](userId.toString)
+  
+//  private def entityRef(userId: UUID) = entityRefString(userId.toString)
+//  private def entityRefString(userId: String) = registry.refFor[UserEntity](userId)
+
 }

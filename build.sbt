@@ -19,8 +19,13 @@ lazy val biddingImpl = lagomExternalProject("bidding", "com.example" %% "bidding
 
 lazy val `challengerone` = (project in file("."))
   .settings(commonSettings: _*)
-  .aggregate(`challengerone-api`, `challengerone-impl`, `challengerone-stream-api`, `challengerone-stream-impl`)
+  .aggregate(`challengerone-helper`, `challengerone-api`, `challengerone-impl`, `challengerone-stream-api`, `challengerone-stream-impl`)
   .settings(name := "challengerone")
+  .dependsOn(`challengerone-helper`)
+
+lazy val `challengerone-helper` = (project in file("challengerone-helper"))
+  .settings(commonSettings: _*)
+  .settings( )
 
 lazy val `challengerone-api` = (project in file("challengerone-api"))
   .settings(commonSettings: _*)

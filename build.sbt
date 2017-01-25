@@ -16,11 +16,11 @@ lazy val `challengerone` = (project in file("."))
         cOneBiddingImpl, 
   		cOneItemApi, 
   		cOneItemImpl, 
-  		cOneSearchApi, 
-  		cOneSearchImpl, 
-  		cOneSecurity, 
-  		cOneTransactionApi,
-  		cOneTransactionImpl,
+//  		cOneSearchApi, 
+//  		cOneSearchImpl, 
+//  		cOneSecurity, 
+//  		cOneTransactionApi,
+//  		cOneTransactionImpl,
   		cOneUserApi, 
   		cOneUserImpl
   		)

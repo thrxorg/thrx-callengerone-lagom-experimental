@@ -7,8 +7,8 @@
 @(status: ItemStatus.Status, paginatedItems: PaginatedSequence[ItemSummary])(implicit nav: Nav)
 
 @for(user <- nav.user) {
-    @main(user.name) {
-        <h1>@user.name</h1>
+    @main(user.nickName) {
+        <h1>@user.nickName</h1>
 
         <div class="row">
             <ul class="menu vertical large-3 columns">

@@ -7,6 +7,8 @@ scalaVersion in ThisBuild := "2.11.8"
 val playJsonDerivedCodecs = "org.julienrf" %% "play-json-derived-codecs" % "3.3"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+val lombok = "org.projectlombok" % "lombok" % "1.16.10"
+
 
 updateOptions := updateOptions.value.withCachedResolution(true)
 
@@ -89,11 +91,13 @@ lazy val cOneBiddingImpl = (project in file("c-one-bidding-impl"))
 
   )
 
+
 lazy val cOneSearchApi = (project in file("c-one-search-api"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      lagomScaladslApi,
+      lagomJavadslApi,
+      lombok,
       playJsonDerivedCodecs
     )
   )
@@ -101,14 +105,14 @@ lazy val cOneSearchApi = (project in file("c-one-search-api"))
 
 lazy val cOneSearchImpl = (project in file("c-one-search-impl"))
   .settings(commonSettings: _*)
-  // .enablePlugins(LagomScala)
+  .enablePlugins(LagomJava)
   .dependsOn(cOneSearchApi, cOneItemApi, cOneBiddingApi)
   .settings(
     libraryDependencies ++= Seq(
-      lagomScaladslPersistenceCassandra,
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest
+      lagomJavadslPersistenceCassandra,
+      lagomJavadslTestKit,
+      lagomJavadslKafkaClient,
+      lombok
     )
   )
 
